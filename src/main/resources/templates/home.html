@@ -11,8 +11,8 @@
     <body class="p-3 mb-2 bg-light text-black">
         <div class="container">
             <div id="logoutDiv">
-                <form action="#" method="POST">
-                    <button type="submit" class="btn btn-secondary float-right">Logout</button>
+                <form  action="/logout" method="POST">
+                    <button  value="Logout" type="submit" class="btn btn-secondary float-right">Logout</button>
                 </form>
             </div>
             <div id="contentDiv" style="clear: right;">
@@ -51,8 +51,8 @@
                                 <tbody>
                                 <tr th:each="fileUploaded: ${files}">
                                     <td>
-                                        <a target="_blank" class="btn btn-success">View</a>
-                                        <a  class="btn btn-danger">Delete</a>
+                                        <a  th:href="@{/image(fileId=${fileUploaded.fileId})}"  target="_blank" class="btn btn-success">Download</a>
+                                        <a  th:href="@{/deleteFile(fileId=${fileUploaded.fileId})}"  class="btn btn-danger">Delete</a>
                                     </td>
                                     <th th:text="${fileUploaded.filename}" scope="row">ExampleFile.txt</th>
                                 </tr>

@@ -11,6 +11,9 @@ public interface UploadMapper {
     @Select("SELECT * FROM FILES")
     List<FileModel>  getAllFiles();
 
+    @Select("SELECT * FROM FILES WHERE fileId = #{id}")
+    FileModel  findFileById(Integer id);
+
     @Insert("INSERT INTO FILES (filename, contenttype, filesize, userid, filedata)"
             + " VALUES (#{filename}, #{contenttype}, #{filesize}, #{userId}, #{data})")
     @Options(useGeneratedKeys = true, keyProperty = "fileId")

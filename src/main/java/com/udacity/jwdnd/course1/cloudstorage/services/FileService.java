@@ -31,6 +31,14 @@ public class FileService {
 
     }
 
+    public void deleteFile(Integer fileId) {
+        uploadMapper.delete(fileId);
+    }
+
+    public FileModel findFile(Integer fileId) {
+        return uploadMapper.findFileById(fileId);
+    }
+
     public List<FileModel> getFiles() {
         return uploadMapper.getAllFiles();
     }
