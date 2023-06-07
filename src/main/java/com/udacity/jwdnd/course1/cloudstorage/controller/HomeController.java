@@ -1,8 +1,9 @@
 package com.udacity.jwdnd.course1.cloudstorage.controller;
 
-import com.udacity.jwdnd.course1.cloudstorage.model.FileForm;
 import com.udacity.jwdnd.course1.cloudstorage.model.FileModel;
+import com.udacity.jwdnd.course1.cloudstorage.model.NoteForm;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
+import com.udacity.jwdnd.course1.cloudstorage.services.NoteService;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +26,17 @@ public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     private final FileService fileService;
+    private final NoteService noteService;
 
-    public HomeController(FileService fileService) {
+    public HomeController(FileService fileService, NoteService noteService) {
         this.fileService = fileService;
+        this.noteService = noteService;
     }
 
     @GetMapping("/home")
-    public String getHomePage(Model model) {
+    public String getHomePage(NoteForm noteForm, Model model) {
         model.addAttribute("files", this.fileService.getFiles());
+        model.addAttribute("notes", this.noteService.getNotes());
         return "home";
     }
 
@@ -65,14 +69,36 @@ public class HomeController {
         response.getOutputStream().close();
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         // Invalidate the session and clear authentication
         SecurityContextHolder.getContext().setAuthentication(null);
         request.getSession().invalidate();
 
         // Redirect to the login page
-        return  "redirect:/login?logout";
+        return  "redirect:/login";
+    }
+
+
+    @PostMapping("/addnote")
+    public String addNote(Authentication authentication, NoteForm noteForm, Model model) {
+        if (noteForm.getNoteid() != null) {
+            noteService.updateNote(noteForm);
+        } else {
+            int userId = noteService.getUser(authentication.getName()).getUserId();
+            noteService.store(noteForm, userId);
+        }
+        model.addAttribute("notes", this.noteService.getNotes());
+        return "home";
+    }
+
+    @GetMapping("/deleteNote")
+    public String deleteNote(@RequestParam Integer noteid,  NoteForm noteForm, Model model) {
+        logger.info("Deleting file with fileId: {}", noteid);
+        noteService.deleteNote(noteid);
+        logger.info("File deleted. Redirecting to home.");
+        model.addAttribute("notes", this.noteService.getNotes());
+        return "home";
     }
 
 }
